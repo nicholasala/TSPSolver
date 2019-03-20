@@ -3,6 +3,7 @@ import java.util.Arrays;
 
 public class NearestNeighbour extends TSPAlgorithm{
     private ArrayList<City> unvisited;
+    private City next;
     private int startIndex;
 
     NearestNeighbour(MapHandler map) {

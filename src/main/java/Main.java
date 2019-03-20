@@ -7,7 +7,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         long start = System.currentTimeMillis();
-        reader = new BufferedReader(new FileReader(System.getProperty("user.dir") + "/ALGO_cup_2019_problems/eil76.tsp"));
+        reader = new BufferedReader(new FileReader(System.getProperty("user.dir") + "/ALGO_cup_2019_problems/ch130.tsp"));
 
         CityConfParser parser = new CityConfParser(reader);
         MapHandler map = parser.parse();

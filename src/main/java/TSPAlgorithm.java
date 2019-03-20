@@ -3,7 +3,6 @@ import java.util.Random;
 public abstract class TSPAlgorithm {
     protected MapHandler map;
     protected Tour tour;
-    protected City next;
     protected double totalDistance = 0;
     protected Random rand;
 
