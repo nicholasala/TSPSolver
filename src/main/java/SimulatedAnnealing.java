@@ -1,10 +1,12 @@
 public class SimulatedAnnealing extends TSPAlgorithm{
     private long startTime;
+    private long maxTime;
 
-    SimulatedAnnealing(MapHandler map, Tour defaultTour, long startTime) {
+    SimulatedAnnealing(MapHandler map, Tour defaultTour, long startTime, long maxTime) {
         super(map);
         tour = defaultTour;
         this.startTime = startTime;
+        this.maxTime = maxTime;
     }
 
     @Override
@@ -15,8 +17,7 @@ public class SimulatedAnnealing extends TSPAlgorithm{
         for(int id : tour.getAsArray())
             current.add(id);
 
-        //TODO migliorare la gestione del tempo, proporzionalmente ad n del problema. fl1577 ha impiegato 31 minuti, e non aveva finito
-        while(T > 0.16f && (System.currentTimeMillis() - startTime) < 178000){
+        while(T > 0.7f && (System.currentTimeMillis() - startTime) < maxTime){
 
             for(int i=1; i<100; i++){
                 candidate = new TwoOpt(this.map, doubleBridge(current)).startTour();
@@ -31,6 +32,9 @@ public class SimulatedAnnealing extends TSPAlgorithm{
                 }else if(rand.nextFloat() < Math.pow(Math.E, -((candidateDist - currentDist)/T))){
                     current = candidate;
                 }
+
+                if((System.currentTimeMillis() - startTime) > maxTime)
+                    break;
             }
 
             T *= alpha;

@@ -25,12 +25,18 @@ public class TwoOpt extends TSPAlgorithm {
             }
 
             //Prima versione
-            if(best_gain < 0)
-                tour.swap(best_i+1, best_k);
-
-            //Seconda versione
             //if(best_gain < 0)
-              //  computeSwap(best_i+1, best_k);
+               //tour.swap(best_i+1, best_k);
+
+            //Seconda versione meglio per fl1577
+            //if(best_gain < 0)
+              //computeSwap(best_i+1, best_k);
+
+            //Terza versione,
+            if(best_gain < 0 && size > 318)
+                computeSwap(best_i+1, best_k);
+            else if(best_gain < 0)
+                tour.swap(best_i+1, best_k);
         }
 
         calculateTotDist();
@@ -39,13 +45,8 @@ public class TwoOpt extends TSPAlgorithm {
 
     //Bisogna gestire il caso in cui k sia uguale a size-1, in quel caso il k+1 elemento sarà la prima città del tour
     private int computeGain(int i, int k){
-            if(k != tour.size()-1){
-                return (map.distById(tour.get(i), tour.get(k)) + map.distById(tour.get(i+1), tour.get(k+1)))            //tour modificato
-                        - (map.distById(tour.get(i), tour.get(i+1)) + map.distById(tour.get(k), tour.get(k+1)));        //tour attuale
-            }else{
-                return (map.distById(tour.get(i), tour.get(k)) + map.distById(tour.get(i+1), tour.get(0)))            //tour modificato
-                        - (map.distById(tour.get(i), tour.get(i+1)) + map.distById(tour.get(k), tour.get(0)));        //tour attuale
-            }
+        return (map.distById(tour.get(i), tour.get(k)) + map.distById(tour.get(i+1), tour.get((k+1) % tour.size())))            //tour modificato
+                - (map.distById(tour.get(i), tour.get(i+1)) + map.distById(tour.get(k), tour.get((k+1) % tour.size())));        //tour attuale
     }
 
     private void computeSwap(int firstIndex, int secondIndex){
