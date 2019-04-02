@@ -12,7 +12,7 @@ public class TwoOpt extends TSPAlgorithm {
         while(best_gain < 0){
             best_gain = 0;
 
-            for(int i=0; i<size; i++){
+            for(int i=0; i<size-1; i++){
                 for(int k=i+2; k<size; k++){
                     gain = computeGain(i, k);
 

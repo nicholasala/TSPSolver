@@ -4,34 +4,96 @@ import java.io.IOException;
 
 public class Main {
     public static BufferedReader reader;
+    public static CityConfParser parser;
+    public static MapHandler map;
 
     public static void main(String[] args) throws IOException {
         long start = System.currentTimeMillis();
-        reader = new BufferedReader(new FileReader(System.getProperty("user.dir") + "/ALGO_cup_2019_problems/rat783.tsp"));
+        long randSeed;
+        long maxTime = 179000;
+        TSPAlgorithm algorithm = null;
+        reader = new BufferedReader(new FileReader(System.getProperty("user.dir") + "/ALGO_cup_2019_problems/"+args[0]));
+        parser = new CityConfParser(reader);
+        map = parser.parse();
 
-        CityConfParser parser = new CityConfParser(reader);
-        MapHandler map = parser.parse();
+        //IMPOSTAZIONE DEL SEED E ALGORITMO
+
+        switch(args[0]){
+            case "eil76.tsp":
+                randSeed = 1553608541473l;
+                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, randSeed).startTour(), start, maxTime, randSeed);
+                break;
+            case "ch130.tsp":
+                randSeed = 1553609078779l;
+                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, randSeed).startTour(), start, maxTime, randSeed);
+                break;
+            case "kroA100.tsp":
+                randSeed = 1553681004370l;
+                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
+                break;
+            case "d198.tsp":
+                randSeed = 1553615360785l;
+                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, randSeed).startTour(), start, maxTime, randSeed);
+                break;
+            case "lin318.tsp":
+                randSeed = 1553643040717l;
+                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
+                break;
+            case "pr439.tsp":
+                randSeed = 1553662026587l;
+                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, randSeed).startTour(), start, maxTime, randSeed);
+                break;
+            case "pcb442.tsp":
+                randSeed = 1553670262082l;
+                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, randSeed).startTour(), start, maxTime, randSeed);
+                break;
+            case "rat783.tsp":
+                randSeed = 1553691220990l;
+                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, randSeed).startTour(), start, maxTime, randSeed);
+                break;
+            case "u1060.tsp":
+                randSeed = 1553712201382l;
+                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, randSeed).startTour(), start, maxTime, randSeed);
+                break;
+            case "fl1577.tsp":
+                randSeed = 1553717420504l;
+                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, randSeed).startTour(), start, maxTime, randSeed);
+                break;
+            default:
+                randSeed = start;
+                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, randSeed).startTour(), start, maxTime, randSeed);
+                break;
+        }
 
         //TSP
-        //nearest neighbour
-        TSPAlgorithm nn = new NearestNeighbour(map, 0);
-        nn.startTour();
-
-        //two opt
-        TSPAlgorithm to = new TwoOpt(map, nn.getTour());
-        to.startTour();
-
-        //simulated annealing
-        TSPAlgorithm sa = new SimulatedAnnealing(map, to.getTour(), start, 179000);
-        sa.startTour();
-        sa.printInfo();
+        algorithm.startTour();
+        algorithm.printInfo();
 
         reader.close();
         long time = System.currentTimeMillis() - start;
         System.out.println(time + " ms " + time/1000 + " sec");
+
+
+        /*
+        //nearest neighbour
+        TSPAlgorithm nn = new NearestNeighbour(map, randSeed);
+        nn.startTour();
+        nn.printInfo();
+
+        //Two Opt
+        TSPAlgorithm to = new TwoOpt(map, nn.getTour());
+        to.startTour();
+        to.printInfo();
+
+        //Random
+        //TSPAlgorithm rand = new RandomTour(map, randSeed);
+        //rand.startTour();
+
+        //simulated annealing
+        TSPAlgorithm sa = new SimulatedAnnealing(map, to.getTour(), start, maxTime, randSeed);
+        sa.startTour();*/
     }
 }
 
-//rat783 4.5537 % sa
-//u1060 5.2469 % sa
-//fl1577 2.8360 % sa
+//Soluzioni ottime in:
+//eil76, ch130, kroA100, d198

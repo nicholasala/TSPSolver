@@ -1,31 +1,38 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class NearestNeighbour extends TSPAlgorithm{
-    private ArrayList<City> unvisited;
-    private City next;
+    private ArrayList<Integer> unvisited;
+    private int next;
     private int startIndex;
 
-    NearestNeighbour(MapHandler map) {
-        super(map);
-        this.unvisited = new ArrayList<City>(Arrays.asList(map.cities));
+    NearestNeighbour(MapHandler map, long randSeed) {
+        super(map, randSeed);
+        this.unvisited = new ArrayList<Integer>();
+
+        for(int i=1; i<=map.getDimension(); i++)
+            unvisited.add(i);
+
         this.startIndex = rand.nextInt(map.getDimension());
     }
 
     NearestNeighbour(MapHandler map, int startIndex) {
         super(map);
-        this.unvisited = new ArrayList<City>(Arrays.asList(map.cities));
+        this.unvisited = new ArrayList<Integer>();
+
+        for(int i=1; i<=map.getDimension(); i++)
+            unvisited.add(i);
+
         this.startIndex = startIndex;
     }
 
     @Override
     public Tour startTour() {
-        //visit first vity
-        next = map.cities[startIndex];
+        //visit first city
+        next = map.cities[startIndex].id;
         visitNext();
 
         //visit all unvisited cities
-        while((next = getUnvisitedNearest()) != null)
+        while((next = getUnvisitedNearest()) != -1)
             visitNext();
 
         //add distance between first and last
@@ -33,13 +40,13 @@ public class NearestNeighbour extends TSPAlgorithm{
         return tour;
     }
 
-    private City getUnvisitedNearest(){
-        City ret = null;
+    private Integer getUnvisitedNearest(){
+        int ret = -1;
         int min = 0, dist = 0;
 
-        for(City c : unvisited){
-            if((dist = map.distById(next.id, c.id)) < min || min == 0){
-                ret = c;
+        for(Integer nId : unvisited){
+            if((dist = map.distById(next, nId)) < min || min == 0){
+                ret = nId;
                 min = dist;
             }
         }
@@ -49,7 +56,7 @@ public class NearestNeighbour extends TSPAlgorithm{
     }
 
     private void visitNext(){
-        tour.add(next.id);
-        unvisited.remove(next);
+        tour.add(next);
+        unvisited.remove((Object)next);
     }
 }

@@ -12,9 +12,19 @@ public abstract class TSPAlgorithm {
         rand = new Random();
     }
 
+        TSPAlgorithm(MapHandler map, long randomSeed){
+        this.map = map;
+        tour = new Tour(this.map.getDimension());
+        rand = new Random(randomSeed);
+    }
+
     public abstract Tour startTour();
 
     public Tour getTour(){ return tour; }
+
+    public double getError(){
+        return ((totalDistance - map.getBest_known())/map.getBest_known())*100;
+    }
 
     public void printTour(){ System.out.println(tour); }
 
@@ -43,5 +53,14 @@ public abstract class TSPAlgorithm {
 
         d += map.distById(t.get(tour.size()-1), t.get(0));
         return d;
+    }
+
+    @Override
+    public String toString(){
+        return "\n\nName: "+map.getName()+"\n"+
+                "Type: "+map.getType()+"\n"+
+                "Best know: "+map.getBest_known()+"\n"+
+                "Total distance found: "+totalDistance+"\n"+
+                "Error: "+((totalDistance - map.getBest_known())/map.getBest_known())*100+"%";
     }
 }

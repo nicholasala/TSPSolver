@@ -2,8 +2,8 @@ public class SimulatedAnnealing extends TSPAlgorithm{
     private long startTime;
     private long maxTime;
 
-    SimulatedAnnealing(MapHandler map, Tour defaultTour, long startTime, long maxTime) {
-        super(map);
+    SimulatedAnnealing(MapHandler map, Tour defaultTour, long startTime, long maxTime, long randomSeed) {
+        super(map, randomSeed);
         tour = defaultTour;
         this.startTime = startTime;
         this.maxTime = maxTime;
@@ -17,7 +17,7 @@ public class SimulatedAnnealing extends TSPAlgorithm{
         for(int id : tour.getAsArray())
             current.add(id);
 
-        while(T > 0.7f && (System.currentTimeMillis() - startTime) < maxTime){
+        while(T > 0.3f && !timeFinished()){
 
             for(int i=1; i<100; i++){
                 candidate = new TwoOpt(this.map, doubleBridge(current)).startTour();
@@ -33,7 +33,7 @@ public class SimulatedAnnealing extends TSPAlgorithm{
                     current = candidate;
                 }
 
-                if((System.currentTimeMillis() - startTime) > maxTime)
+                if(timeFinished())
                     break;
             }
 
@@ -69,6 +69,10 @@ public class SimulatedAnnealing extends TSPAlgorithm{
             next.add(source.get(i));
 
         return next;
+    }
+
+    private boolean timeFinished(){
+        return (System.currentTimeMillis() - startTime) > maxTime;
     }
 }
 
