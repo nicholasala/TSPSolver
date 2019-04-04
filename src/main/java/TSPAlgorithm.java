@@ -12,7 +12,7 @@ public abstract class TSPAlgorithm {
         rand = new Random();
     }
 
-        TSPAlgorithm(MapHandler map, long randomSeed){
+    TSPAlgorithm(MapHandler map, long randomSeed){
         this.map = map;
         tour = new Tour(this.map.getDimension());
         rand = new Random(randomSeed);

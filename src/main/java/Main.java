@@ -66,25 +66,22 @@ public class Main {
         }
 
         //TSP
-        algorithm.startTour();
-        algorithm.printInfo();
-
-        reader.close();
-        long time = System.currentTimeMillis() - start;
-        System.out.println(time + " ms " + time/1000 + " sec");
+        //algorithm.startTour();
+        //algorithm.printInfo();
 
 
-        /*
+
+
         //nearest neighbour
         TSPAlgorithm nn = new NearestNeighbour(map, randSeed);
         nn.startTour();
-        nn.printInfo();
+
 
         //Two Opt
         TSPAlgorithm to = new TwoOpt(map, nn.getTour());
         to.startTour();
         to.printInfo();
-
+/*
         //Random
         //TSPAlgorithm rand = new RandomTour(map, randSeed);
         //rand.startTour();
@@ -92,6 +89,9 @@ public class Main {
         //simulated annealing
         TSPAlgorithm sa = new SimulatedAnnealing(map, to.getTour(), start, maxTime, randSeed);
         sa.startTour();*/
+        reader.close();
+        long time = System.currentTimeMillis() - start;
+        System.out.println(time + " ms " + time/1000 + " sec");
     }
 }
 
