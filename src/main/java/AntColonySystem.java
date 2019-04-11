@@ -1,9 +1,32 @@
 public class AntColonySystem extends TSPAlgorithm {
     private float[][] pheromone;
     private float initialTao;
+    private float rho;
+    private float alpha;
     public int size;
     private long startTime;
     private long maxTime;
+
+    AntColonySystem(MapHandler map, NearestNeighbour initialAlg, long startTime, long maxTime) {
+        super(map);
+        this.startTime = startTime;
+        this.maxTime = maxTime;
+        tour = initialAlg.startTour();
+        size = map.getDimension();
+        pheromone = new float[size][size];
+        totalDistance = initialAlg.totalDistance;
+        initialTao = 1/((float)initialAlg.getError() * size);
+        rho = 0.1f;
+        alpha = 0.4f;
+
+        for(int r=0; r<size; r++)
+            for(int c=0; c<size; c++)
+                pheromone[r][c] = initialTao;
+
+
+        //TODO, partire da un soluzione ottimizzata ? (twoOpt) chiamando già in fase di inizializzazione phModifyThroughBest()
+        //phGlobalUpdate();
+    }
 
     AntColonySystem(MapHandler map, NearestNeighbour initialAlg, long startTime, long maxTime, long randSeed) {
         super(map, randSeed);
@@ -14,14 +37,16 @@ public class AntColonySystem extends TSPAlgorithm {
         pheromone = new float[size][size];
         totalDistance = initialAlg.totalDistance;
         initialTao = 1/((float)initialAlg.getError() * size);
+        rho = 0.1f;
+        alpha = 0.4f;
 
         for(int r=0; r<size; r++)
-            for(int c=r+1; c<size; c++)
+            for(int c=0; c<size; c++)
                 pheromone[r][c] = initialTao;
 
 
             //TODO, partire da un soluzione ottimizzata ? (twoOpt) chiamando già in fase di inizializzazione phModifyThroughBest()
-        phModifyThroughBest();
+        //phGlobalUpdate();
     }
 
     @Override
@@ -31,76 +56,102 @@ public class AntColonySystem extends TSPAlgorithm {
         int panoDist;
 
         while(!timeFinished() && totalDistance != map.getBest_known()){
-            //posiziono ed avvio 10 formiche
-            for(int i=0; i<10; i++){
-                panoramix = new Ant(rand.nextInt(size), this);
+            //posiziono ed avvio 3 formiche
+            for(int i=0; i<3; i++){
+                panoramix = new Ant(rand.nextInt(size));
                 panoTour = panoramix.run();
-                panoDist = getTotDist(panoTour);
+                panoDist = panoramix.getDist();
 
                 if(panoDist < totalDistance){
                     totalDistance = panoDist;
                     tour = panoTour;
                 }
 
-                if(timeFinished()) break;
+                //if(timeFinished()) break;
             }
 
             //aumento il feromone secondo il tragitto vincitore
-            phModifyThroughBest();
-
-            //evaporazione del feromone in tutta la mappa
-            phEvaporation();
+            phGlobalUpdate();
         }
 
         return tour;
     }
 
-    public float phById(int id1, int id2){
-        return id1 <= id2 ? pheromone[id1-1][id2-1] : pheromone[id2-1][id1-1];
-    }
+    private float phById(int from, int to){ return pheromone[from-1][to-1]; }
 
-    private void phModifyThroughBest(){
+    //( )=(1−ρ)⋅τ(r,s)+ρ⋅∆τ(r,s)
+    private void phLocalUpdate(int from, int to){ pheromone[from-1][to-1] = (1 - rho)*pheromone[from-1][to-1] + rho*initialTao; }
+
+    //()=(1−α)⋅τ(r,s) + α ⋅ ∆τ(r,s)global
+    private void phIncrement(int from, int to){ pheromone[from-1][to-1] += (1 - alpha)*pheromone[from-1][to-1] + alpha * (1 / totalDistance); }
+
+    private void phGlobalUpdate(){
         for(int i=0; i < size-1; i++)
             phIncrement(tour.get(i), tour.get(i+1));
-    }
 
-    //TODO
-    private void phIncrement(int id1, int id2){
-        if(id1 <= id2)
-            pheromone[id1-1][id2-1] += 56;
-        else
-            pheromone[id2-1][id1-1] += 56;
-    }
-
-    //TODO
-    private void phEvaporation(){
-        for(int r=0; r<size; r++)
-            for(int c=r+1; c<size; c++)
-                pheromone[r][c] -= 1 ;
+        phIncrement(tour.get(size-1), tour.get(0));
     }
 
     private boolean timeFinished(){
         return (System.currentTimeMillis() - startTime) > maxTime;
     }
 
+
+
     ////////////////////////////////////////////     ANT     ////////////////////////////////////////////
     private class Ant{
-        private int startIndex;
-        private AntColonySystem system;
+        private int startIndex, dist = 0;
+        private byte[] visited;
+        private int next;
+        private Tour antTour;
 
-        public Ant(int startIndex, AntColonySystem system){
+        public Ant(int startIndex){
             this.startIndex = startIndex;
-            this.system = system;
+            visited = new byte[size];
+            antTour = new Tour(size);
+        }
+
+        public Tour run(){
+            next = map.cities[startIndex].id;
+
+            while(next != -1){
+                visit(next);
+                if(rand.nextFloat() < 0.93f) //TODO applicare calcolo probabilistico
+                    next = exploitation();
+                else
+                    next = exploration();
+            }
+
+            return new TwoOpt(map, antTour).startTour();
         }
 
         //TODO
-        public Tour run(){
-            Tour antTour = new Tour(system.size);
+        private int exploitation(){
+            int ret = -1;
 
-            float cisiamo = system.phById(2,1);
+            for(int i=0; i<visited.length; i++)
+                if(visited[i] == 0 && phById(next, i+1) > 2 && (dist += map.distById(next, i+1)) > 20) //TODO applicare calcolo probabilistico
+                    ret = i+1;
 
-            //ritorno la soluzione ottimizzata con un due opt
-            return new TwoOpt(system.map, antTour).startTour();
+            if(ret > 0)
+                phLocalUpdate(next, ret);
+            return ret;
+        }
+
+        //TODO
+        private int exploration(){
+            int ret = -1;
+
+            return ret;
+        }
+
+        private void visit(int id){
+            antTour.add(next);
+            visited[id - 1] = 1;
+        }
+
+        public int getDist() {
+            return dist;
         }
     }
 }

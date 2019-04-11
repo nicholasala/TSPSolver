@@ -2,6 +2,13 @@ public class SimulatedAnnealing extends TSPAlgorithm{
     private long startTime;
     private long maxTime;
 
+    SimulatedAnnealing(MapHandler map, Tour defaultTour, long startTime, long maxTime) {
+        super(map);
+        tour = defaultTour;
+        this.startTime = startTime;
+        this.maxTime = maxTime;
+    }
+
     SimulatedAnnealing(MapHandler map, Tour defaultTour, long startTime, long maxTime, long randomSeed) {
         super(map, randomSeed);
         tour = defaultTour;

@@ -24,19 +24,16 @@ public class TwoOpt extends TSPAlgorithm {
                 }
             }
 
-            //Prima versione
-            //if(best_gain < 0)
-               //tour.swap(best_i+1, best_k);
-
-            //Seconda versione meglio per fl1577
-            //if(best_gain < 0)
-              //computeSwap(best_i+1, best_k);
-
             //Terza versione,
-            if(best_gain < 0 && size > 318)
+            //Nei casi in cui abbiamo mappe con meno di 318 città, conviene scambiare solo le due città coinvolte senza cambiare il verso del percorso all'interno
+            //if(best_gain < 0 && size > 318)
+                //computeSwap(best_i+1, best_k);
+            //else if(best_gain < 0)
+                //tour.swap(best_i+1, best_k);
+
+            //Quarta versione,
+            if(best_gain < 0)
                 computeSwap(best_i+1, best_k);
-            else if(best_gain < 0)
-                tour.swap(best_i+1, best_k);
         }
 
         calculateTotDist();
