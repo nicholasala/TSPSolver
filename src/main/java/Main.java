@@ -65,9 +65,11 @@ public class Main {
                 break;
         }
 
-        //TSP
         algorithm.startTour();
-        algorithm.printInfo();
+
+        //TSP
+        //algorithm.startTour();
+        //algorithm.printInfo();
 
         //nearest neighbour
         //TSPAlgorithm nn = new NearestNeighbour(map, 0);

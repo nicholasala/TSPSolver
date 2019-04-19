@@ -27,6 +27,8 @@ public class Tour {
         tour[index] = id;
     }
 
+    public boolean isFull() { return c == tour.length; }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

@@ -15,7 +15,7 @@ public class AntColonySystem extends TSPAlgorithm {
         size = map.getDimension();
         pheromone = new float[size][size];
         totalDistance = initialAlg.totalDistance;
-        initialTao = 1/((float)initialAlg.getError() * size);
+        initialTao = 1/((float)totalDistance * size);
         rho = 0.1f;
         alpha = 0.4f;
 
@@ -25,7 +25,7 @@ public class AntColonySystem extends TSPAlgorithm {
 
 
         //TODO, partire da un soluzione ottimizzata ? (twoOpt) chiamando già in fase di inizializzazione phModifyThroughBest()
-        //phGlobalUpdate();
+        //globalTrailUpdate();
     }
 
     AntColonySystem(MapHandler map, NearestNeighbour initialAlg, long startTime, long maxTime, long randSeed) {
@@ -36,7 +36,7 @@ public class AntColonySystem extends TSPAlgorithm {
         size = map.getDimension();
         pheromone = new float[size][size];
         totalDistance = initialAlg.totalDistance;
-        initialTao = 1/((float)initialAlg.getError() * size);
+        initialTao = 1/((float)totalDistance * size);
         rho = 0.1f;
         alpha = 0.4f;
 
@@ -46,32 +46,38 @@ public class AntColonySystem extends TSPAlgorithm {
 
 
             //TODO, partire da un soluzione ottimizzata ? (twoOpt) chiamando già in fase di inizializzazione phModifyThroughBest()
-        //phGlobalUpdate();
+        //globalTrailUpdate();
     }
 
     @Override
     public Tour startTour() {
-        Ant panoramix;
-        Tour panoTour;
-        int panoDist;
+        int antsNum = 3;
+        Ant[] ants = new Ant[antsNum];
+        boolean run = true;
 
         while(!timeFinished() && totalDistance != map.getBest_known()){
-            //posiziono ed avvio 3 formiche
-            for(int i=0; i<3; i++){
-                panoramix = new Ant(rand.nextInt(size));
-                panoTour = panoramix.run();
-                panoDist = panoramix.getDist();
+            //posiziono le formiche
+            for(Ant a : ants)
+                a = new Ant(rand.nextInt(size));
 
-                if(panoDist < totalDistance){
-                    totalDistance = panoDist;
-                    tour = panoTour;
+            //muovo le formiche
+            while(run)
+                for(Ant a : ants)
+                    run = a.run();
+
+            //seleziono il tour migliore
+            for(Ant a : ants){
+                Tour optTour = a.getTwoOptTour();
+                int aDist = getTotDist(optTour);
+
+                if(aDist < totalDistance){
+                    tour = optTour;
+                    totalDistance = aDist;
                 }
-
-                //if(timeFinished()) break;
             }
 
             //aumento il feromone secondo il tragitto vincitore
-            phGlobalUpdate();
+            globalTrailUpdate();
         }
 
         return tour;
@@ -80,12 +86,12 @@ public class AntColonySystem extends TSPAlgorithm {
     private float phById(int from, int to){ return pheromone[from-1][to-1]; }
 
     //( )=(1−ρ)⋅τ(r,s)+ρ⋅∆τ(r,s)
-    private void phLocalUpdate(int from, int to){ pheromone[from-1][to-1] = (1 - rho)*pheromone[from-1][to-1] + rho*initialTao; }
+    private void localTrailUpdate(int from, int to){ pheromone[from-1][to-1] = (1 - rho)*pheromone[from-1][to-1] + rho*initialTao; }
 
     //()=(1−α)⋅τ(r,s) + α ⋅ ∆τ(r,s)global
     private void phIncrement(int from, int to){ pheromone[from-1][to-1] += (1 - alpha)*pheromone[from-1][to-1] + alpha * (1 / totalDistance); }
 
-    private void phGlobalUpdate(){
+    private void globalTrailUpdate(){
         for(int i=0; i < size-1; i++)
             phIncrement(tour.get(i), tour.get(i+1));
 
@@ -102,6 +108,7 @@ public class AntColonySystem extends TSPAlgorithm {
     private class Ant{
         private int startIndex, dist = 0;
         private byte[] visited;
+        private int previus;
         private int next;
         private Tour antTour;
 
@@ -109,38 +116,42 @@ public class AntColonySystem extends TSPAlgorithm {
             this.startIndex = startIndex;
             visited = new byte[size];
             antTour = new Tour(size);
+            next = map.cities[startIndex].id;
+            visit(next);
         }
 
-        public Tour run(){
-            next = map.cities[startIndex].id;
-
-            while(next != -1){
-                visit(next);
-                if(rand.nextFloat() < 0.93f) //TODO applicare calcolo probabilistico
+        public boolean run(){
+            if(tour.isFull()){
+                return false;
+            }else{
+                previus = next;
+                if(rand.nextFloat() < 0.93f)
                     next = exploitation();
                 else
                     next = exploration();
-            }
 
-            return new TwoOpt(map, antTour).startTour();
+                localTrailUpdate(previus, next);
+                visit(next);
+                return true;
+            }
         }
 
         //TODO
+        //assumiamo che venga chiamato solo quando ci sono ancora città da aggiungere
         private int exploitation(){
-            int ret = -1;
+            int ret = 0;
 
             for(int i=0; i<visited.length; i++)
-                if(visited[i] == 0 && phById(next, i+1) > 2 && (dist += map.distById(next, i+1)) > 20) //TODO applicare calcolo probabilistico
+                //if(visited[i] == 0 && is best than ret) //TODO prendere la città non visitata migliore tenendo conto di distanza e ph
                     ret = i+1;
 
-            if(ret > 0)
-                phLocalUpdate(next, ret);
             return ret;
         }
 
         //TODO
+        //assumiamo che venga chiamato solo quando ci sono ancora città da aggiungere
         private int exploration(){
-            int ret = -1;
+            int ret = 0;
 
             return ret;
         }
@@ -150,8 +161,8 @@ public class AntColonySystem extends TSPAlgorithm {
             visited[id - 1] = 1;
         }
 
-        public int getDist() {
-            return dist;
+        public Tour getTwoOptTour() {
+            return new TwoOpt(map, antTour).startTour();
         }
     }
 }

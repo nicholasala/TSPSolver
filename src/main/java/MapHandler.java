@@ -8,7 +8,8 @@ public class MapHandler {
     private int best_known;
     private int c = 0;
     public City[] cities;
-    public int[][] distMatrix;
+    public int[][] distances;
+    public int[][] candidates;
 
     public String getName() {
         return name;
@@ -67,18 +68,37 @@ public class MapHandler {
 
     //matrice triangolare superiore
     public void genDistanceMatrix(){
-        distMatrix = new int[dimension][dimension];
+        distances = new int[dimension][dimension];
         for(int r=0; r<dimension; r++)
             for(int c=r+1; c<dimension; c++)
-                distMatrix[r][c] = distance(cities[r], cities[c]);
+                distances[r][c] = distance(cities[r], cities[c]);
     }
 
     public int distById(int id1, int id2){
-        return id1 <= id2 ? distMatrix[id1-1][id2-1] : distMatrix[id2-1][id1-1];
+        return id1 <= id2 ? distances[id1-1][id2-1] : distances[id2-1][id1-1];
     }
 
     private int distance(City a, City b){
         return (int)(Math.sqrt(Math.pow((b.x - a.x), 2) + Math.pow((b.y - a.y), 2))+0.5);
+    }
+
+    //TODO
+    //le candidate per ogni città sono le 15 più vicine + quelle appartenenti al minimum spanning tree (prim o kruskal)
+    //durante la costruzione dell'albero, mantenere in una variabile il numero massimo di città collegate da una città, così da avere il numero di righe
+    //della matrice
+    public void genCandidateMatrix(){
+        //Prim minimum spanning tree
+        Prim primTree = new Prim(this);
+        primTree.generateMinSpanningTree();
+
+        candidates = new int[15 + primTree.getMaxConnections()][dimension];
+
+        //trovare per ogni città un array delle 15 più vicine, utilizzando direttamente la matrice
+        //e poi aggiungere le appartenenti alle connessioni prim (se non già presenti)
+
+        for(int i=1; i<=dimension; i++){
+
+        }
     }
 
     @Override
