@@ -15,10 +15,11 @@ public class Main {
         reader = new BufferedReader(new FileReader(System.getProperty("user.dir") + "/ALGO_cup_2019_problems/"+args[0]));
         parser = new CityConfParser(reader);
         map = parser.parse();
+        map.genCandidateMatrix();
 
         //IMPOSTAZIONE DEL SEED E ALGORITMO
 
-        switch(args[0]){
+        /*switch(args[0]){
             case "eil76.tsp":
                 //randSeed = 1553608541473l;
                 algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
@@ -63,9 +64,9 @@ public class Main {
                 randSeed = start;
                 algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
                 break;
-        }
+        }*/
 
-        algorithm.startTour();
+        //algorithm.startTour();
 
         //TSP
         //algorithm.startTour();

@@ -82,22 +82,41 @@ public class MapHandler {
         return (int)(Math.sqrt(Math.pow((b.x - a.x), 2) + Math.pow((b.y - a.y), 2))+0.5);
     }
 
-    //TODO
     //le candidate per ogni città sono le 15 più vicine + quelle appartenenti al minimum spanning tree (prim o kruskal)
-    //durante la costruzione dell'albero, mantenere in una variabile il numero massimo di città collegate da una città, così da avere il numero di righe
-    //della matrice
     public void genCandidateMatrix(){
         //Prim minimum spanning tree
         Prim primTree = new Prim(this);
         primTree.generateMinSpanningTree();
-
-        candidates = new int[15 + primTree.getMaxConnections()][dimension];
+        candidates = new int[dimension][15 + primTree.getMaxConnections()];
+        int dist, max, c;
 
         //trovare per ogni città un array delle 15 più vicine, utilizzando direttamente la matrice
-        //e poi aggiungere le appartenenti alle connessioni prim (se non già presenti)
-
+        //e poi aggiungere le appartenenti alle connessioni prim
         for(int i=1; i<=dimension; i++){
+            for(int k=1; k<=dimension; k++){
+                if(i != k){
+                    dist = distById(i, k);
+                    max = -1;
 
+                    for(int j=0; j<15; j++){
+                        if(candidates[i-1][j] == 0){
+                            candidates[i-1][j] = k;
+                            break;
+                        }else if(j != 14){
+                            if(distById(candidates[i-1][j], i) > dist)
+                                max = j;
+                        }else{
+                            if(max != -1)
+                                candidates[i-1][max] = k;
+                        }
+                    }
+                }
+            }
+
+            //aggiunta città del minimum spanning tree
+            c = 15;
+            for(Integer rel : primTree.getRelations(i))
+                candidates[i-1][c++] = rel;
         }
     }
 

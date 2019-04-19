@@ -50,6 +50,10 @@ public class Prim {
         return relations[cityId - 1];
     }
 
+    public int relationsNum(int cityId){
+        return relations[cityId - 1].size();
+    }
+
     public int getMaxConnections(){
         return maxConnections;
     }
