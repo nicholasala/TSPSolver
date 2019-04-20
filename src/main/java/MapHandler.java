@@ -1,4 +1,3 @@
-
 public class MapHandler {
     private String name;
     private String type;
@@ -7,13 +6,15 @@ public class MapHandler {
     private String edge_weight_type;
     private int best_known;
     private int c = 0;
-    public City[] cities;
-    public int[][] distances;
-    public int[][] candidates;
-
+    private int numCandidates = 15;
+    private Prim primTree;
+    private int[] relCandidates;
     public String getName() {
         return name;
     }
+    public City[] cities;
+    public int[][] distances;
+    public int[][] candidates;
 
     public void setName(String name) {
         this.name = name;
@@ -85,9 +86,10 @@ public class MapHandler {
     //le candidate per ogni città sono le 15 più vicine + quelle appartenenti al minimum spanning tree (prim o kruskal)
     public void genCandidateMatrix(){
         //Prim minimum spanning tree
-        Prim primTree = new Prim(this);
+        primTree = new Prim(this);
         primTree.generateMinSpanningTree();
-        candidates = new int[dimension][15 + primTree.getMaxConnections()];
+        candidates = new int[dimension][numCandidates + primTree.getMaxConnections()];
+        relCandidates = new int[dimension];
         int dist, max, c;
 
         //trovare per ogni città un array delle 15 più vicine, utilizzando direttamente la matrice
@@ -113,11 +115,29 @@ public class MapHandler {
                 }
             }
 
-            //aggiunta città del minimum spanning tree
-            c = 15;
-            for(Integer rel : primTree.getRelations(i))
-                candidates[i-1][c++] = rel;
+            //aggiunta città del minimum spanning tree, se non presenti nelle candidate
+            c = numCandidates;
+            boolean add;
+            for(Integer rel : primTree.getRelations(i)){
+                add = false;
+                for(int cand=0; cand<numCandidates; cand++){
+                    if(cand == (numCandidates - 1) && rel != candidates[i-1][cand])
+                        add = true;
+                    else if(rel == candidates[i-1][cand])
+                        break;
+                }
+
+                if(add)
+                    candidates[i-1][c++] = rel;
+            }
+
+            relCandidates[i - 1] = c;
         }
+    }
+
+    //ritorna il numero di candidate connesse ad una città
+    public int candidateLinkNum(int cityId){
+        return relCandidates[cityId - 1];
     }
 
     @Override

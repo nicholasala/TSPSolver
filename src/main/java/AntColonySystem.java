@@ -136,16 +136,26 @@ public class AntColonySystem extends TSPAlgorithm {
             }
         }
 
-        //TODO
         //assumiamo che venga chiamato solo quando ci sono ancora città da aggiungere
+        //(ph * (1/distArco)) / (ph * (1/distArco)) per ogni arco candidato
         private int exploitation(){
-            int ret = 0;
+            int bestCand = 0;
+            float denSum = 0, bestChance = Float.MIN_VALUE, actualChance;
 
-            for(int i=0; i<visited.length; i++)
-                //if(visited[i] == 0 && is best than ret) //TODO prendere la città non visitata migliore tenendo conto di distanza e ph
-                    ret = i+1;
+            for(int i=0; i<map.candidateLinkNum(previus); i++)
+                denSum += phById(previus, map.candidates[previus - 1][i]) * (1/map.distById(previus, map.candidates[previus - 1][i]));
 
-            return ret;
+            //ciclo attraverso le candidate della città attuale
+            for(int i=0; i<map.candidateLinkNum(previus); i++){
+                actualChance = (phById(previus, map.candidates[previus - 1][i]) * (1/map.distById(previus, map.candidates[previus - 1][i]))) / denSum;
+
+                if(isUnvisited(map.candidates[previus - 1][i]) && actualChance > bestChance){
+                    bestChance = actualChance;
+                    bestCand = i;
+                }
+            }
+
+            return map.candidates[previus - 1][bestCand];
         }
 
         //TODO
@@ -159,6 +169,10 @@ public class AntColonySystem extends TSPAlgorithm {
         private void visit(int id){
             antTour.add(next);
             visited[id - 1] = 1;
+        }
+
+        private boolean isUnvisited(int id){
+            return visited[id - 1] == 0;
         }
 
         public Tour getTwoOptTour() {
