@@ -90,7 +90,7 @@ public class MapHandler {
         primTree.generateMinSpanningTree();
         candidates = new int[dimension][numCandidates + primTree.getMaxConnections()];
         relCandidates = new int[dimension];
-        int dist, max, c;
+        int dist, max, c, actualDist;
 
         //trovare per ogni città un array delle 15 più vicine, utilizzando direttamente la matrice
         //e poi aggiungere le appartenenti alle connessioni prim
@@ -100,15 +100,17 @@ public class MapHandler {
                     dist = distById(i, k);
                     max = -1;
 
-                    for(int j=0; j<15; j++){
+                    for(int j=0; j<numCandidates; j++){
                         if(candidates[i-1][j] == 0){
                             candidates[i-1][j] = k;
                             break;
-                        }else if(j != 14){
-                            if(distById(candidates[i-1][j], i) > dist)
-                                max = j;
                         }else{
-                            if(max != -1)
+                            actualDist = distById(i, candidates[i-1][j]);
+
+                            if(actualDist > dist && (max == -1 || distById(i, candidates[i-1][max]) < actualDist))
+                                max = j;
+
+                            if(j == (numCandidates - 1) && max != -1)
                                 candidates[i-1][max] = k;
                         }
                     }
@@ -133,6 +135,7 @@ public class MapHandler {
 
             relCandidates[i - 1] = c;
         }
+
     }
 
     //ritorna il numero di candidate connesse ad una città

@@ -29,6 +29,8 @@ public class Tour {
 
     public boolean isFull() { return c == tour.length; }
 
+    public int citiesNumPresent() {return c; }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

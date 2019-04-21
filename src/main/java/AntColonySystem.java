@@ -11,7 +11,8 @@ public class AntColonySystem extends TSPAlgorithm {
         super(map);
         this.startTime = startTime;
         this.maxTime = maxTime;
-        tour = initialAlg.startTour();
+        //parto da un tour già ottimizzato
+        tour = new TwoOpt(map, initialAlg.startTour()).startTour();
         size = map.getDimension();
         pheromone = new float[size][size];
         totalDistance = initialAlg.totalDistance;
@@ -23,16 +24,15 @@ public class AntColonySystem extends TSPAlgorithm {
             for(int c=0; c<size; c++)
                 pheromone[r][c] = initialTao;
 
-
-        //TODO, partire da un soluzione ottimizzata ? (twoOpt) chiamando già in fase di inizializzazione phModifyThroughBest()
-        //globalTrailUpdate();
+        globalTrailUpdate();
     }
 
     AntColonySystem(MapHandler map, NearestNeighbour initialAlg, long startTime, long maxTime, long randSeed) {
         super(map, randSeed);
         this.startTime = startTime;
         this.maxTime = maxTime;
-        tour = initialAlg.startTour();
+        //parto da un tour già ottimizzato
+        tour = new TwoOpt(map, initialAlg.startTour()).startTour();
         size = map.getDimension();
         pheromone = new float[size][size];
         totalDistance = initialAlg.totalDistance;
@@ -44,23 +44,22 @@ public class AntColonySystem extends TSPAlgorithm {
             for(int c=0; c<size; c++)
                 pheromone[r][c] = initialTao;
 
-
-            //TODO, partire da un soluzione ottimizzata ? (twoOpt) chiamando già in fase di inizializzazione phModifyThroughBest()
-        //globalTrailUpdate();
+        globalTrailUpdate();
     }
 
     @Override
     public Tour startTour() {
         int antsNum = 3;
         Ant[] ants = new Ant[antsNum];
-        boolean run = true;
+        boolean run;
 
         while(!timeFinished() && totalDistance != map.getBest_known()){
             //posiziono le formiche
-            for(Ant a : ants)
-                a = new Ant(rand.nextInt(size));
+            for(int i=0; i<ants.length; i++)
+                ants[i] = new Ant(rand.nextInt(size));
 
             //muovo le formiche
+            run = true;
             while(run)
                 for(Ant a : ants)
                     run = a.run();
@@ -121,7 +120,7 @@ public class AntColonySystem extends TSPAlgorithm {
         }
 
         public boolean run(){
-            if(tour.isFull()){
+            if(antTour.isFull()){
                 return false;
             }else{
                 previus = next;
@@ -139,15 +138,15 @@ public class AntColonySystem extends TSPAlgorithm {
         //assumiamo che venga chiamato solo quando ci sono ancora città da aggiungere
         //(ph * (1/distArco)) / (ph * (1/distArco)) per ogni arco candidato
         private int exploitation(){
-            int bestCand = 0;
-            float denSum = 0, bestChance = Float.MIN_VALUE, actualChance;
+            int bestCand = -1;
+            float denSum = 0, bestChance = -Float.MAX_VALUE, actualChance;
 
             for(int i=0; i<map.candidateLinkNum(previus); i++)
-                denSum += phById(previus, map.candidates[previus - 1][i]) * (1/map.distById(previus, map.candidates[previus - 1][i]));
+                denSum += phById(previus, map.candidates[previus - 1][i]) * (1/(float)map.distById(previus, map.candidates[previus - 1][i]));
 
-            //ciclo attraverso le candidate della città attuale
+            //ciclo attraverso le candidate della città attuale, chi massimizza la probabilità verrà scelta come miglior candidata
             for(int i=0; i<map.candidateLinkNum(previus); i++){
-                actualChance = (phById(previus, map.candidates[previus - 1][i]) * (1/map.distById(previus, map.candidates[previus - 1][i]))) / denSum;
+                actualChance = (phById(previus, map.candidates[previus - 1][i]) * (1/(float)map.distById(previus, map.candidates[previus - 1][i]))) / denSum;
 
                 if(isUnvisited(map.candidates[previus - 1][i]) && actualChance > bestChance){
                     bestChance = actualChance;
@@ -155,15 +154,42 @@ public class AntColonySystem extends TSPAlgorithm {
                 }
             }
 
-            return map.candidates[previus - 1][bestCand];
+            if(bestCand == -1)
+                return getFirstUnvisited();
+            else
+                return map.candidates[previus - 1][bestCand];
         }
 
-        //TODO
         //assumiamo che venga chiamato solo quando ci sono ancora città da aggiungere
         private int exploration(){
-            int ret = 0;
+            int bestCand = -1;
+            float denSum = 0, bestChance = -Float.MAX_VALUE, actualChance;
 
-            return ret;
+            for(int i=0; i<map.candidateLinkNum(previus); i++)
+                denSum += phById(previus, map.candidates[previus - 1][i]) * (1/(float)map.distById(previus, map.candidates[previus - 1][i]));
+
+            //ciclo attraverso le candidate della città attuale, chi massimizza la probabilità verrà scelta come miglior candidata
+            for(int i=0; i<map.candidateLinkNum(previus); i++){
+                actualChance = (phById(previus, map.candidates[previus - 1][i]) * (1/(float)map.distById(previus, map.candidates[previus - 1][i]))) / denSum;
+
+                if(isUnvisited(map.candidates[previus - 1][i]) && (actualChance - rand.nextFloat()) > bestChance){
+                    bestChance = actualChance;
+                    bestCand = i;
+                }
+            }
+
+            if(bestCand == -1)
+                return getFirstUnvisited();
+            else
+                return map.candidates[previus - 1][bestCand];
+        }
+
+        private int getFirstUnvisited(){
+            for(int i=0; i<visited.length; i++)
+                if(visited[i] == 0)
+                    return (i + 1);
+
+            return 0;
         }
 
         private void visit(int id){

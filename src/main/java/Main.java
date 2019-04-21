@@ -17,9 +17,7 @@ public class Main {
         map = parser.parse();
         map.genCandidateMatrix();
 
-        //IMPOSTAZIONE DEL SEED E ALGORITMO
-
-        /*switch(args[0]){
+        switch(args[0]){
             case "eil76.tsp":
                 //randSeed = 1553608541473l;
                 algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
@@ -34,15 +32,15 @@ public class Main {
                 break;
             case "d198.tsp":
                 //randSeed = 1553615360785l;
-                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
+                algorithm = new AntColonySystem(map, new NearestNeighbour(map, 0), start, maxTime, randSeed);
                 break;
             case "lin318.tsp":
                 //randSeed = 1553643040717l;
-                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
+                algorithm = new AntColonySystem(map, new NearestNeighbour(map, 0), start, maxTime, randSeed);
                 break;
             case "pr439.tsp":
                 //randSeed = 1553662026587l;
-                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
+                algorithm = new AntColonySystem(map, new NearestNeighbour(map, 0), start, maxTime, randSeed);
                 break;
             case "pcb442.tsp":
                 //randSeed = 1553670262082l;
@@ -50,11 +48,13 @@ public class Main {
                 break;
             case "rat783.tsp":
                 //randSeed = 1553691220990l;
-                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
+                maxTime = 178000;
+                algorithm = new AntColonySystem(map, new NearestNeighbour(map, 0), start, maxTime, randSeed);
                 break;
             case "u1060.tsp":
                 //randSeed = 1553712201382l;
-                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, 0);
+                maxTime = 178000;
+                algorithm = new AntColonySystem(map, new NearestNeighbour(map, 0), start, maxTime, randSeed);
                 break;
             case "fl1577.tsp":
                 //randSeed = 1553717420504l;
@@ -64,30 +64,10 @@ public class Main {
                 randSeed = start;
                 algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
                 break;
-        }*/
+        }
 
-        //algorithm.startTour();
-
-        //TSP
-        //algorithm.startTour();
-        //algorithm.printInfo();
-
-        //nearest neighbour
-        //TSPAlgorithm nn = new NearestNeighbour(map, 0);
-        //nn.startTour();
-
-        //Two Opt
-        //TSPAlgorithm to = new TwoOpt(map, nn.getTour());
-        //to.startTour();
-        //to.printInfo();
-
-        //Random
-        //TSPAlgorithm rand = new RandomTour(map, randSeed);
-        //rand.startTour();
-
-        //simulated annealing
-        //TSPAlgorithm sa = new SimulatedAnnealing(map, to.getTour(), start, maxTime, randSeed);
-        //sa.startTour();
+        algorithm.startTour();
+        algorithm.printInfo();
 
         reader.close();
         long time = System.currentTimeMillis() - start;

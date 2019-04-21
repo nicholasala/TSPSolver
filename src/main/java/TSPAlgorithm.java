@@ -29,7 +29,8 @@ public abstract class TSPAlgorithm {
     public void printTour(){ System.out.println(tour); }
 
     public void printInfo(){
-        System.out.println("Name: "+map.getName()+"\n"+
+        System.out.println("Algorithm: " +this.getClass().getName()+"\n"+
+                            "Name: "+map.getName()+"\n"+
                             "Type: "+map.getType()+"\n"+
                             "Best know: "+map.getBest_known()+"\n"+
                             "Total distance found: "+totalDistance+"\n"+
