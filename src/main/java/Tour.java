@@ -1,6 +1,8 @@
+import java.util.HashMap;
 
 public class Tour {
     private int[] tour;
+    private HashMap<Integer, Integer> positions;
     private int c = 0;
 
     Tour(int dimension){
@@ -15,21 +17,30 @@ public class Tour {
 
     public int[] getAsArray(){  return tour; }
 
-    //swap two cities position in a tour, by index
+    public int getPosition(int id){ return positions.get(id); }
 
+    public void generatePositionsMap(){
+        positions = new HashMap<>(size());
+        for(int i=0; i<size(); i++)
+            positions.put(tour[i], i);
+    }
+
+    //swap two cities position in a tour, by index
     public void swap(int firstIndex, int secondIndex){
         int firstId = tour[firstIndex];
         tour[firstIndex] = tour[secondIndex];
         tour[secondIndex] = firstId;
     }
 
-    public void set(int id, int index){
-        tour[index] = id;
+    public void swapAndRefreshPos(int firstIndex, int secondIndex){
+        int firstId = tour[firstIndex];
+        tour[firstIndex] = tour[secondIndex];
+        tour[secondIndex] = firstId;
+        positions.put(firstId, secondIndex);
+        positions.put(tour[firstIndex], firstIndex);
     }
 
     public boolean isFull() { return c == tour.length; }
-
-    public int citiesNumPresent() {return c; }
 
     @Override
     public String toString() {

@@ -17,6 +17,8 @@ public class Main {
         map = parser.parse();
         map.genCandidateMatrix();
 
+        //TODO, CandidateTwoOpt ?
+
         switch(args[0]){
             case "eil76.tsp":
                 //randSeed = 1553608541473l;
@@ -30,35 +32,36 @@ public class Main {
                 //randSeed = 1553681004370l;
                 algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
                 break;
-            case "d198.tsp":
-                //randSeed = 1553615360785l;
-                algorithm = new AntColonySystem(map, new NearestNeighbour(map, 0), start, maxTime, randSeed);
-                break;
-            case "lin318.tsp":
-                //randSeed = 1553643040717l;
-                algorithm = new AntColonySystem(map, new NearestNeighbour(map, 0), start, maxTime, randSeed);
-                break;
-            case "pr439.tsp":
-                //randSeed = 1553662026587l;
-                algorithm = new AntColonySystem(map, new NearestNeighbour(map, 0), start, maxTime, randSeed);
-                break;
             case "pcb442.tsp":
                 //randSeed = 1553670262082l;
+                //TODO in questo caso usare un candidateTwoOpt migliora molto la soluzione
                 algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
-                break;
-            case "rat783.tsp":
-                //randSeed = 1553691220990l;
-                maxTime = 178000;
-                algorithm = new AntColonySystem(map, new NearestNeighbour(map, 0), start, maxTime, randSeed);
-                break;
-            case "u1060.tsp":
-                //randSeed = 1553712201382l;
-                maxTime = 178000;
-                algorithm = new AntColonySystem(map, new NearestNeighbour(map, 0), start, maxTime, randSeed);
                 break;
             case "fl1577.tsp":
                 //randSeed = 1553717420504l;
                 algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
+                break;
+            case "d198.tsp":
+                //randSeed = 1553615360785l;
+                algorithm = new AntColonySystem(map, new NearestNeighbour(map, map.getDimension()/2), start, maxTime, randSeed);
+                break;
+            case "lin318.tsp":
+                //randSeed = 1553643040717l;
+                algorithm = new AntColonySystem(map, new NearestNeighbour(map, map.getDimension()/2), start, maxTime, randSeed);
+                break;
+            case "pr439.tsp":
+                //randSeed = 1553662026587l;
+                algorithm = new AntColonySystem(map, new NearestNeighbour(map, map.getDimension()/2), start, maxTime, randSeed);
+                break;
+            case "rat783.tsp":
+                //randSeed = 1553691220990l;
+                maxTime = 178000;
+                algorithm = new AntColonySystem(map, new NearestNeighbour(map, map.getDimension()/2), start, maxTime, randSeed);
+                break;
+            case "u1060.tsp":
+                //randSeed = 1553712201382l;
+                maxTime = 178000;
+                algorithm = new AntColonySystem(map, new NearestNeighbour(map, map.getDimension()/2), start, maxTime, randSeed);
                 break;
             default:
                 randSeed = start;

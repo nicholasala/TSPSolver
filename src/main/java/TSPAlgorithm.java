@@ -20,14 +20,6 @@ public abstract class TSPAlgorithm {
 
     public abstract Tour startTour();
 
-    public Tour getTour(){ return tour; }
-
-    public double getError(){
-        return ((totalDistance - map.getBest_known())/map.getBest_known())*100;
-    }
-
-    public void printTour(){ System.out.println(tour); }
-
     public void printInfo(){
         System.out.println("Algorithm: " +this.getClass().getName()+"\n"+
                             "Name: "+map.getName()+"\n"+

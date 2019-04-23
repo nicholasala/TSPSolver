@@ -84,7 +84,6 @@ public class SimulatedAnnealing extends TSPAlgorithm{
 }
 
 /*
-
     Parte da una soluzione, calcola una soluzione next vicina,(una mossa casuale del double bridge) se è migliore la prende,
     Se è peggiore, la valuta secondo la probabilità
 
@@ -96,5 +95,4 @@ public class SimulatedAnnealing extends TSPAlgorithm{
     DeltaE differenza (in termini di distanza) tra la soluzione attuale e la soluzione prossima
 
     e^(-deltaE/T) formula per il calcolo della probabilità di saltare alla soluzione prossima peggiore
-
  */

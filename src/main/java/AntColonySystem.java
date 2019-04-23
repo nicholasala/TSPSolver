@@ -154,10 +154,10 @@ public class AntColonySystem extends TSPAlgorithm {
                 }
             }
 
-            if(bestCand == -1)
-                return getFirstUnvisited();
-            else
+            if(bestCand != -1)
                 return map.candidates[previus - 1][bestCand];
+            else
+                return getFirstUnvisited();
         }
 
         //assumiamo che venga chiamato solo quando ci sono ancora città da aggiungere
@@ -178,10 +178,10 @@ public class AntColonySystem extends TSPAlgorithm {
                 }
             }
 
-            if(bestCand == -1)
-                return getFirstUnvisited();
-            else
+            if(bestCand != -1)
                 return map.candidates[previus - 1][bestCand];
+            else
+                return getFirstUnvisited();
         }
 
         private int getFirstUnvisited(){
@@ -209,7 +209,6 @@ public class AntColonySystem extends TSPAlgorithm {
 
 
 /*
-
     più una città è distante, meno possibilità ha di essere scelta (la "visibilità");
     più l'intensità del percorso di feromone situato sul crinale tra due città è maggiore, più ha possibilità di essere scelto;
     una volta completato il suo percorso, la formica deposita, su tutti i bordi attraversati, più feromone se il percorso è breve;
@@ -237,5 +236,4 @@ public class AntColonySystem extends TSPAlgorithm {
 
      La soluzione vincitrice, porterà ad incrementare il feromone di ogni arco della soluzione premiata
      La matrice storica di come sta andando l'algoritmo è nel feromone, ad ogni iterazione infatti gli unici oggetti rimasti sono la formica migliore e l matrice del feromone
-
 */
