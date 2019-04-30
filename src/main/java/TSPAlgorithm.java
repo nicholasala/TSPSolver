@@ -26,7 +26,7 @@ public abstract class TSPAlgorithm {
                             "Type: "+map.getType()+"\n"+
                             "Best know: "+map.getBest_known()+"\n"+
                             "Total distance found: "+totalDistance+"\n"+
-                            "Error: "+((totalDistance - map.getBest_known())/map.getBest_known())*100+"%");
+                            "Error: "+getError()+"%");
     }
 
     protected void calculateTotDist(){
@@ -47,6 +47,10 @@ public abstract class TSPAlgorithm {
         d += map.distById(t.get(tour.size()-1), t.get(0));
         return d;
     }
+
+    public Tour getTour() { return this.tour; }
+
+    public Double getError() { return ((totalDistance - map.getBest_known())/map.getBest_known())*100; }
 
     @Override
     public String toString(){

@@ -1,8 +1,8 @@
-public class CandidateTwoOpt extends TSPAlgorithm {
+public class TwoOptCandidate extends TSPAlgorithm {
     private int size;
 
     //TODO il twoopt con candidate non da gli stessi valori che da il two opt normale, e in molti casi genera soluzioni con un errore maggiore
-    CandidateTwoOpt(MapHandler map, Tour defaultTour) {
+    TwoOptCandidate(MapHandler map, Tour defaultTour) {
         super(map);
         tour = defaultTour;
         size = tour.size();

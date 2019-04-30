@@ -18,27 +18,32 @@ public class SimulatedAnnealing extends TSPAlgorithm{
 
     @Override
     public Tour startTour() {
-        float T = 100, alpha = 0.95f;
+        float T = 100, alpha = 0.96f;
+        int currentDist, candidateDist;
         Tour current = new Tour(tour.size()), candidate;
 
         for(int id : tour.getAsArray())
             current.add(id);
 
-        while((T > 0.000001f || totalDistance != map.getBest_known()) && !timeFinished()){
+        calculateTotDist();
+        currentDist = (int)totalDistance;
+
+        while(!timeFinished() && totalDistance != map.getBest_known()){
 
             for(int i=1; i<100; i++){
                 candidate = new TwoOpt(this.map, doubleBridge(current)).startTour();
-                int currentDist = getTotDist(current);
-                int candidateDist = getTotDist(candidate);
+                candidateDist = getTotDist(candidate);
 
                 if(candidateDist < currentDist){
                     current = candidate;
-                    if(candidateDist < getTotDist(tour)){
+                    currentDist = candidateDist;
+                    if(candidateDist < totalDistance){
                         totalDistance = candidateDist;
                         tour = current;
                     }
                 }else if(rand.nextFloat() < Math.pow(Math.E, -((candidateDist - currentDist)/T))){
                     current = candidate;
+                    currentDist = candidateDist;
                 }
 
                 if(timeFinished())

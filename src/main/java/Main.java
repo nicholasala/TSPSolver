@@ -17,7 +17,8 @@ public class Main {
         map = parser.parse();
         map.genCandidateMatrix();
 
-        //TODO, CandidateTwoOpt ?
+        //TODO, TwoOptCandidate ?
+        //TODO, genCandidate solo in caso di ant ?
 
         switch(args[0]){
             case "eil76.tsp":
@@ -25,7 +26,7 @@ public class Main {
                 algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
                 break;
             case "ch130.tsp":
-                //randSeed = 1553609078779l;
+                randSeed = 0l;
                 algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
                 break;
             case "kroA100.tsp":
@@ -70,13 +71,11 @@ public class Main {
         }
 
         algorithm.startTour();
-        algorithm.printInfo();
-
-        reader.close();
         long time = System.currentTimeMillis() - start;
         System.out.println(time + " ms " + time/1000 + " sec \nrandSeed:"+randSeed);
+
+        algorithm.printInfo();
+        reader.close();
+        parser.saveOptTour(algorithm.getTour());
     }
 }
-
-//Soluzioni ottime in:
-//eil76, ch130, kroA100, d198

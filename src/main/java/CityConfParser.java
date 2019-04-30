@@ -1,3 +1,5 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 
@@ -68,6 +70,25 @@ public class CityConfParser {
 
         info.genDistanceMatrix();
         return info;
+    }
+
+    public void saveOptTour(Tour tour){
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(System.getProperty("user.dir") + "/OptTour/"+info.getName()+".opt.tour"));
+            String header = "NAME : "+info.getName()+".opt.tour\n" +
+                    "COMMENT : Optimum tour for "+info.getName()+".tsp ("+info.getBest_known()+")\n" +
+                    "TYPE : "+info.getType()+"\n" +
+                    "DIMENSION : "+info.getDimension()+"\n" +
+                    "TOUR_SECTION\n";
+            writer.write(header);
+
+            for(Integer i : tour.getAsArray())
+                writer.write(String.valueOf(i)+"\n");
+
+            writer.write("-1\n" + "EOF");
+            writer.flush();
+            writer.close();
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     private String getString() throws IOException {
