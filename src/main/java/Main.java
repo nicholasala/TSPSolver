@@ -7,74 +7,36 @@ public class Main {
     public static CityConfParser parser;
     public static MapHandler map;
 
+    //args to pass -> fileName AlgorithmType randSeed maxTime
+    //TODO, TwoOptCandidate ?
+
     public static void main(String[] args) throws IOException {
         long start = System.currentTimeMillis();
-        long randSeed = start;
-        long maxTime = 179000;
-        TSPAlgorithm algorithm = null;
-        reader = new BufferedReader(new FileReader(System.getProperty("user.dir") + "/ALGO_cup_2019_problems/"+args[0]));
+        reader = new BufferedReader(new FileReader(System.getProperty("user.dir") + "/ALGO_cup_2019_problems/"+args[0]+".tsp"));
         parser = new CityConfParser(reader);
         map = parser.parse();
-        map.genCandidateMatrix();
+        TSPAlgorithm algorithm;
+        long randSeed = Long.valueOf(args[2]);
+        long maxTime = Long.valueOf(args[3]);
 
-        //TODO, TwoOptCandidate ?
-        //TODO, genCandidate solo in caso di ant ?
-
-        switch(args[0]){
-            case "eil76.tsp":
-                //randSeed = 1553608541473l;
+        switch(args[1]){
+            case "S":
+                //SimulatedAnnealing
                 algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
                 break;
-            case "ch130.tsp":
-                randSeed = 0l;
-                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
-                break;
-            case "kroA100.tsp":
-                //randSeed = 1553681004370l;
-                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
-                break;
-            case "pcb442.tsp":
-                //randSeed = 1553670262082l;
-                //TODO in questo caso usare un candidateTwoOpt migliora molto la soluzione
-                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
-                break;
-            case "fl1577.tsp":
-                //randSeed = 1553717420504l;
-                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
-                break;
-            case "d198.tsp":
-                //randSeed = 1553615360785l;
-                algorithm = new AntColonySystem(map, new NearestNeighbour(map, map.getDimension()/2), start, maxTime, randSeed);
-                break;
-            case "lin318.tsp":
-                //randSeed = 1553643040717l;
-                algorithm = new AntColonySystem(map, new NearestNeighbour(map, map.getDimension()/2), start, maxTime, randSeed);
-                break;
-            case "pr439.tsp":
-                //randSeed = 1553662026587l;
-                algorithm = new AntColonySystem(map, new NearestNeighbour(map, map.getDimension()/2), start, maxTime, randSeed);
-                break;
-            case "rat783.tsp":
-                //randSeed = 1553691220990l;
-                maxTime = 178000;
-                algorithm = new AntColonySystem(map, new NearestNeighbour(map, map.getDimension()/2), start, maxTime, randSeed);
-                break;
-            case "u1060.tsp":
-                //randSeed = 1553712201382l;
-                maxTime = 178000;
+            case "A":
+                //AntColonySystem
+                map.genCandidateMatrix();
                 algorithm = new AntColonySystem(map, new NearestNeighbour(map, map.getDimension()/2), start, maxTime, randSeed);
                 break;
             default:
-                randSeed = start;
                 algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
                 break;
         }
 
         algorithm.startTour();
-        long time = System.currentTimeMillis() - start;
-        System.out.println(time + " ms " + time/1000 + " sec \nrandSeed:"+randSeed);
+        System.out.println("dist:"+algorithm.totalDistance+ " error:" +algorithm.getError()+ " seed:"+randSeed);
 
-        algorithm.printInfo();
         reader.close();
         parser.saveOptTour(algorithm.getTour());
     }

@@ -66,6 +66,9 @@ public class AntColonySystem extends TSPAlgorithm {
 
             //seleziono il tour migliore
             for(Ant a : ants){
+                if(timeFinished())
+                    break;
+
                 Tour optTour = a.getTwoOptTour();
                 int aDist = getTotDist(optTour);
 
@@ -74,6 +77,9 @@ public class AntColonySystem extends TSPAlgorithm {
                     totalDistance = aDist;
                 }
             }
+
+            if(timeFinished())
+                break;
 
             //aumento il feromone secondo il tragitto vincitore
             globalTrailUpdate();
