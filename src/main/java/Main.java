@@ -1,6 +1,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Random;
 
 public class Main {
     public static BufferedReader reader;
@@ -18,19 +19,20 @@ public class Main {
         TSPAlgorithm algorithm;
         long randSeed = Long.valueOf(args[2]);
         long maxTime = Long.valueOf(args[3]);
+        Random firstCity = new Random(randSeed);
 
         switch(args[1]){
             case "S":
                 //SimulatedAnnealing
-                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
+                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, firstCity.nextInt(map.getDimension())).startTour(), start, maxTime, randSeed);
                 break;
             case "A":
                 //AntColonySystem
                 map.genCandidateMatrix();
-                algorithm = new AntColonySystem(map, new NearestNeighbour(map, map.getDimension()/2), start, maxTime, randSeed);
+                algorithm = new AntColonySystem(map, new NearestNeighbour(map, firstCity.nextInt(map.getDimension())), start, maxTime, randSeed);
                 break;
             default:
-                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, 0).startTour(), start, maxTime, randSeed);
+                algorithm = new SimulatedAnnealing(map, new NearestNeighbour(map, firstCity.nextInt(map.getDimension())).startTour(), start, maxTime, randSeed);
                 break;
         }
 
