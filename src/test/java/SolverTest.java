@@ -4,9 +4,6 @@ import java.io.IOException;
 
 public class SolverTest {
 
-    //long rs = System.currentTimeMillis();
-    //String.valueOf(rs);
-
     @Test(timeout = 181000)
     public void ch130() throws IOException {
         new Main().main(new String[]{"ch130", "S", "1556740526476", "179000"});
@@ -21,7 +18,7 @@ public class SolverTest {
 
     @Test(timeout = 181000)
     public void eil76() throws IOException {
-        new Main().main(new String[]{"eil76", "S", "1556741049669", "179000"});
+        new Main().main(new String[]{"eil76", "A", "1556741049669", "179000"});
         //dist:538.0 error:0.0 seed:1556741049669 S
     }
 

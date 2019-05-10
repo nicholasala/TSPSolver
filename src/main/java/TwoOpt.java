@@ -25,7 +25,7 @@ public class TwoOpt extends TSPAlgorithm {
             }
 
             //Terza versione,
-            if(size > 318 && best_gain < 0)
+            if(size >= 318 && best_gain < 0)
                 computeSwap(best_i+1, best_k);
             else if(best_gain < 0)
                 tour.swap(best_i+1, best_k);
