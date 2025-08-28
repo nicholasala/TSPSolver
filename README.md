@@ -1,5 +1,5 @@
 # TSPSolver
-Solver for tsp problems with two central algorithms: 
+Solver for Traveling Salesman Problem (TSP) with two central algorithms: 
 
   * **Simulated Annealing**
   * **Ant-Colony system**
